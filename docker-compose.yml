@@ -1,0 +1,19 @@
+services:
+  library-api:
+    image: ghcr.io/mirny20/rest-library-api:latest
+    container_name: library-api
+    ports:
+      - "8080:8080"
+    volumes:
+      - library_data:/data
+    environment:
+      - DB_PATH=/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/swagger-ui/index.html || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+volumes:
+  library_data:
