@@ -13,4 +13,8 @@ export class BookCLient extends BaseClient {
   async updateBook(bookId: number, bookData: BookRequestDTO) {
     return this.put(`/api/library/book/${bookId}`, bookData);
   }
+
+  async deleteBook(bookId: number) {
+    return this.delete(`/api/library/book/${bookId}`);
+  }
 }
