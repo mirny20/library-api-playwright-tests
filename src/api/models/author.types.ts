@@ -9,7 +9,7 @@ export interface AuthorBirth {
   city: string;
 }
 
-export interface Author {
+export interface AuthorResponseDTO {
   authorId: number;
   name: AuthorName;
   nationality: string;
@@ -17,5 +17,4 @@ export interface Author {
   description: string;
 }
 
-export type CreateAuthorDto = Omit<Author, 'authorId'>;
-export type UpdateAuthorDto = Partial<Author>;
+export type AuthorRequestDTO = Partial<Omit<AuthorResponseDTO, 'authorId'>>;
