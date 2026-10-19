@@ -1,4 +1,4 @@
-import { AuthorRequestDTO, AuthorBirth, AuthorName } from "../api/models/author.types";
+import { AuthorRequestDTO } from "../api/models/author.types";
 import { faker } from "@faker-js/faker";
 import { Logger } from "./logger";
 
