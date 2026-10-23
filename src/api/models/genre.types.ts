@@ -1,8 +1,7 @@
-export interface Genre {
+export interface GenreResponseDTO {
   genreId: number;
   name: string;
   description: string;
 }
 
-export type CreateGenreDto = Omit<Genre, 'genreId'>;
-export type UpdateGenreDto = Partial<Genre>;
+export type GenreRequestDTO = Partial<Omit<GenreResponseDTO, 'genreId'>>;
