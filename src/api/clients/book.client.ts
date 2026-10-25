@@ -1,5 +1,6 @@
 import { BaseClient } from "./base.client";
-import { BookRequestDTO } from "../models/book.types";
+import { BookRequestDTO, BookResponseDTO } from "../models/book.types";
+import { APIResponse } from "@playwright/test";
 
 export class BookCLient extends BaseClient {
   async getBookById(bookId: number) {
@@ -16,5 +17,16 @@ export class BookCLient extends BaseClient {
 
   async deleteBook(bookId: number) {
     return this.delete(`/api/library/book/${bookId}`);
+  }
+
+  async getBookIdFromResponse(response: APIResponse): Promise<number> {
+    const body: BookResponseDTO = await this.parseBody(response);
+    const bookId = body.bookId;
+
+    if (!bookId) {
+      throw new Error(`Response body does not contain 'bookId'. Body: ${JSON.stringify(body)}`);
+    }
+
+    return bookId;
   }
 }

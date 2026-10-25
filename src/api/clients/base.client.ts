@@ -1,4 +1,4 @@
-import { APIRequestContext, APIResponse } from "@playwright/test";
+import { APIRequestContext, APIResponse, expect } from "@playwright/test";
 import { Logger } from "../../utils/logger";
 
 export abstract class BaseClient {
@@ -29,5 +29,39 @@ export abstract class BaseClient {
 
   protected async delete(endpoint: string): Promise<APIResponse> {
     return this.request.delete(endpoint);
+  }
+
+  assertSuccess200ResponseCode(response: APIResponse) {
+    expect(response.status()).toBe(200);
+  }
+
+  assertSuccess201ResponseCode(response: APIResponse) {
+    expect(response.status()).toBe(201);
+  }
+
+  assertSuccess204ResponseCode(response: APIResponse) {
+    expect(response.status()).toBe(204);
+  }
+
+  assertError404ResponseCode(response: APIResponse) {
+    expect(response.status()).toBe(404);
+  }
+
+  async parseBody(response: APIResponse) {
+    try {
+      return await response.json();
+    } catch (error) {
+      throw new Error(
+        `Failed to parse response body as JSON. Status: ${response.status()}`,
+        { cause: error }
+      );
+    }
+  }
+
+  async expectResponseMatchesObject(
+    response: APIResponse,
+    expected: Record<string, unknown>
+  ) {
+    expect(await this.parseBody(response)).toMatchObject(expected);
   }
 }
