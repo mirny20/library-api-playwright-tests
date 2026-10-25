@@ -1,7 +1,6 @@
-import { test, expect } from '@playwright/test';
+import { test } from '../src/fixtures/api.fixture';
 import { AuthorClient } from '../src/api/clients/author.client';
 import { generateNewAuthor } from '../src/utils/author-generator';
-import { AuthorResponseDTO } from '../src/api/models/author.types';
 
 let authorCLient: AuthorClient;
 
@@ -13,10 +12,12 @@ test('Add new author', async () => {
   const newAuthorData = generateNewAuthor();
 
   const createAuthorRes = await authorCLient.createAuthor(newAuthorData);
-  expect(createAuthorRes.status()).toBe(201);
-  const createdAuthor: AuthorResponseDTO = await createAuthorRes.json();
-
-  const getAuthorRes = await authorCLient.getAuthorById(createdAuthor.authorId);
-  expect(getAuthorRes.status()).toBe(200);
-  expect(await getAuthorRes.json()).toMatchObject(newAuthorData);
+  
+  authorCLient.assertSuccess201ResponseCode(createAuthorRes);
+  
+  const createdAuthorId = await authorCLient.getAuthorIdFromResponse(createAuthorRes);
+  const getAuthorRes = await authorCLient.getAuthorById(createdAuthorId);
+  
+  authorCLient.assertSuccess200ResponseCode(getAuthorRes);
+  await authorCLient.expectResponseMatchesObject(getAuthorRes, newAuthorData);
 });

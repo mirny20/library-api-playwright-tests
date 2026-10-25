@@ -1,4 +1,4 @@
-import { test as base, expect } from "@playwright/test";
+import { test as base } from "@playwright/test";
 import { AuthorResponseDTO } from "../api/models/author.types";
 import { GenreResponseDTO } from "../api/models/genre.types";
 import { AuthorClient } from "../api/clients/author.client";
@@ -23,7 +23,7 @@ export const test = base.extend<ApiFixtures>({
     const createAuthorRes = await authorClient.createAuthor(authorData);
 
     if (createAuthorRes.status() !== 201) {
-      const errorBody = await createAuthorRes.json();
+      const errorBody = await authorClient.parseBody(createAuthorRes);
 
       throw new Error(
         `Failed to create author in fixture!\n` +
@@ -33,7 +33,7 @@ export const test = base.extend<ApiFixtures>({
       );
     }
 
-    use(await createAuthorRes.json());
+    use(await authorClient.parseBody(createAuthorRes));
   },
 
   genre: async ({ request }, use) => {
@@ -43,7 +43,7 @@ export const test = base.extend<ApiFixtures>({
     const createGenreRes = await genreClient.createGenre(genreData);
 
     if (createGenreRes.status() !== 201) {
-      const errorBody = await createGenreRes.json();
+      const errorBody = await genreClient.parseBody(createGenreRes);
 
       throw new Error(
         `Failed to create genre in fixture!\n` +
@@ -53,7 +53,7 @@ export const test = base.extend<ApiFixtures>({
       );
     }
 
-    use(await createGenreRes.json());
+    use(await genreClient.parseBody(createGenreRes));
   },
 
   book: async ({ request, genre, author }, use) => {
@@ -65,7 +65,7 @@ export const test = base.extend<ApiFixtures>({
     );
 
     if (createBookRes.status() !== 201) {
-      const errorBody = await createBookRes.json();
+      const errorBody = await bookClient.parseBody(createBookRes);
 
       throw new Error(
         `Failed to create book in fixture!\n` +
@@ -75,6 +75,6 @@ export const test = base.extend<ApiFixtures>({
       );
     }
 
-    use(await createBookRes.json());
+    use(await bookClient.parseBody(createBookRes));
   }
 })

@@ -1,8 +1,7 @@
 import { test } from '../src/fixtures/api.fixture';
-import { expect } from '@playwright/test';
 import { BookCLient } from '../src/api/clients/book.client';
 import { generateNewBook } from '../src/utils/book-genarator';
-import { BookRequestDTO, BookResponseDTO } from '../src/api/models/book.types';
+import { BookRequestDTO } from '../src/api/models/book.types';
 
 let bookClient: BookCLient;
 
@@ -11,35 +10,36 @@ test.beforeEach(async ({ request }) => {
 })
 
 test('Add new book and fetch it', async ({ author, genre }) => {
-  const newBook: BookRequestDTO = generateNewBook();
+  const newBook = generateNewBook();
 
   const createBookRes = await bookClient.createBook(
     newBook,
     author.authorId,
     genre.genreId
   );
-  expect(createBookRes.status()).toBe(201);
-  const createdBook: BookResponseDTO = await createBookRes.json();
+  bookClient.assertSuccess201ResponseCode(createBookRes);
 
-  const getBookRes = await bookClient.getBookById(createdBook.bookId);
-  expect(getBookRes.status()).toBe(200);
-  expect(await getBookRes.json()).toMatchObject(newBook);
+  const createdBookId = await bookClient.getBookIdFromResponse(createBookRes);
+  const getBookRes = await bookClient.getBookById(createdBookId);
+
+  bookClient.assertSuccess200ResponseCode(getBookRes);
+  await bookClient.expectResponseMatchesObject(getBookRes, newBook);
 });
 
 test('Update book', async ({ book }) => {
   const updateBookData = generateNewBook();
 
-  const updatedBookRes = await bookClient.updateBook(book.bookId, updateBookData);
-  expect(updatedBookRes.status()).toBe(200);
+  const updateBookRes = await bookClient.updateBook(book.bookId, updateBookData);
+  bookClient.assertSuccess200ResponseCode(updateBookRes);
 
-  const getUpdatedBookResBody = await (await bookClient.getBookById(book.bookId)).json();
-  expect(getUpdatedBookResBody).toMatchObject(updateBookData);
+  const getUpdatedBookRes = await bookClient.getBookById(book.bookId);
+  await bookClient.expectResponseMatchesObject(getUpdatedBookRes, updateBookData);
 });
 
 test('Delete book', async ({ book }) => {
   const deleteBookRes = await bookClient.deleteBook(book.bookId);
-  expect(deleteBookRes.status()).toBe(204);
+  bookClient.assertSuccess204ResponseCode(deleteBookRes);
 
   const getDeletedBookRes = await bookClient.getBookById(book.bookId);
-  expect(getDeletedBookRes.status()).toBe(404);
+  bookClient.assertError404ResponseCode(getDeletedBookRes);
 });
