@@ -8,16 +8,16 @@ test.beforeEach(async ({ request }) => {
   authorCLient = new AuthorClient(request);
 })
 
-test('Add new author', async () => {
+test('Add new author and fetch it', async () => {
   const newAuthorData = generateNewAuthor();
 
   const createAuthorRes = await authorCLient.createAuthor(newAuthorData);
   
-  authorCLient.assertSuccess201ResponseCode(createAuthorRes);
+  await authorCLient.assertSuccess201ResponseCode(createAuthorRes);
   
   const createdAuthorId = await authorCLient.getAuthorIdFromResponse(createAuthorRes);
   const getAuthorRes = await authorCLient.getAuthorById(createdAuthorId);
   
-  authorCLient.assertSuccess200ResponseCode(getAuthorRes);
+  await authorCLient.assertSuccess200ResponseCode(getAuthorRes);
   await authorCLient.expectResponseMatchesObject(getAuthorRes, newAuthorData);
 });

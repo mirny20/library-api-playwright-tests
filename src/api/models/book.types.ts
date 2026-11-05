@@ -1,3 +1,6 @@
+import { AuthorResponseDTO } from "./author.types";
+import { GenreResponseDTO } from "./genre.types";
+
 export interface BookSize {
   height: number;
   width: number;
@@ -19,3 +22,9 @@ export interface BookResponseDTO {
 }
 
 export type BookRequestDTO = Partial<Omit<BookResponseDTO, 'bookId'>>;
+
+export interface BookContext {
+  book: BookResponseDTO;
+  author: AuthorResponseDTO;
+  genre: GenreResponseDTO;
+}

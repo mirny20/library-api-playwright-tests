@@ -5,14 +5,14 @@ import { AuthorClient } from "../api/clients/author.client";
 import { generateNewAuthor } from "../utils/author-generator";
 import { GenreClient } from "../api/clients/genre.client";
 import { generateNewGenre } from "../utils/genre-generator";
-import { BookResponseDTO } from "../api/models/book.types";
+import { BookContext } from "../api/models/book.types";
 import { BookCLient } from "../api/clients/book.client";
 import { generateNewBook } from "../utils/book-genarator";
 
 type ApiFixtures = {
   author: AuthorResponseDTO;
   genre: GenreResponseDTO;
-  book: BookResponseDTO;
+  bookContext: BookContext;
 }
 
 export const test = base.extend<ApiFixtures>({
@@ -56,7 +56,7 @@ export const test = base.extend<ApiFixtures>({
     use(await genreClient.parseBody(createGenreRes));
   },
 
-  book: async ({ request, genre, author }, use) => {
+  bookContext: async ({ request, genre, author }, use) => {
     const bookClient = new BookCLient(request);
     const bookData = generateNewBook();
 
@@ -75,6 +75,12 @@ export const test = base.extend<ApiFixtures>({
       );
     }
 
-    use(await bookClient.parseBody(createBookRes));
+    const bookContext = {
+      book: await bookClient.parseBody(createBookRes),
+      author,
+      genre,
+    }
+
+    await use(bookContext);
   }
 })

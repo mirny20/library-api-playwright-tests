@@ -27,24 +27,44 @@ export abstract class BaseClient {
     return this.request.put(endpoint, { data });
   }
 
-  protected async delete(endpoint: string): Promise<APIResponse> {
-    return this.request.delete(endpoint);
+  protected async delete(endpoint: string, forcibly: boolean = false): Promise<APIResponse> {
+    return this.request.delete(endpoint, { params: { forcibly } });
   }
 
-  assertSuccess200ResponseCode(response: APIResponse) {
-    expect(response.status()).toBe(200);
+  async assertSuccess200ResponseCode(response: APIResponse) {
+    if (response.status() !== 200) {
+      const responseBody = await response.text();
+      throw new Error(
+        `Expected status 200, but got ${response.status()}.\nURL: ${response.url()}\nBody: ${responseBody}`
+      );
+    }
   }
 
-  assertSuccess201ResponseCode(response: APIResponse) {
-    expect(response.status()).toBe(201);
+  async assertSuccess201ResponseCode(response: APIResponse) {
+    if (response.status() !== 201) {
+      const responseBody = await response.text();
+      throw new Error(
+        `Expected status 201, but got ${response.status()}.\nURL: ${response.url()}\nBody: ${responseBody}`
+      );
+    }
   }
 
-  assertSuccess204ResponseCode(response: APIResponse) {
-    expect(response.status()).toBe(204);
+  async assertSuccess204ResponseCode(response: APIResponse) {
+    if (response.status() !== 204) {
+      const responseBody = await response.text();
+      throw new Error(
+        `Expected status 204, but got ${response.status()}.\nURL: ${response.url()}\nBody: ${responseBody}`
+      );
+    }
   }
 
-  assertError404ResponseCode(response: APIResponse) {
-    expect(response.status()).toBe(404);
+  async assertError404ResponseCode(response: APIResponse) {
+    if (response.status() !== 404) {
+      const responseBody = await response.text();
+      throw new Error(
+        `Expected status 404, but got ${response.status()}.\nURL: ${response.url()}\nBody: ${responseBody}`
+      );
+    }
   }
 
   async parseBody(response: APIResponse) {

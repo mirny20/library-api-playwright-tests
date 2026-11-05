@@ -15,13 +15,17 @@ export class AuthorClient extends BaseClient {
     return this.put(`/api/library/author/${authorId}`, authorData);
   }
 
-  async deleteAuthor(authorId: number) {
-    return this.delete(`/api/library/author/${authorId}`);
+  async deleteAuthor(authorId: number, forcibly: boolean = false) {
+    return this.delete(`/api/library/author/${authorId}`, forcibly);
+  }
+
+  async deleteAuthorWithBooksForcibly(authorId: number) {
+    return await this.deleteAuthor(authorId, true);
   }
 
   async getAuthorIdFromResponse(response: APIResponse): Promise<number> {
     const body: AuthorResponseDTO = await this.parseBody(response);
-    const authorId =  body.authorId;
+    const authorId = body.authorId;
 
     if (!authorId) {
       throw new Error(`Response body does not contain 'authorId'. Body: ${JSON.stringify(body)}`);

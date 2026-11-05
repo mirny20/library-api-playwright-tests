@@ -15,6 +15,7 @@ export class Logger {
     if (this.shouldLog(level)) {
       const timestamp = new Date().toISOString();
       console.log(`[${timestamp}] [${level.toUpperCase()}]: ${message}`, ...args);
+      console.log();
     }
   }
 

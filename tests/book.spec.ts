@@ -1,7 +1,6 @@
 import { test } from '../src/fixtures/api.fixture';
 import { BookCLient } from '../src/api/clients/book.client';
 import { generateNewBook } from '../src/utils/book-genarator';
-import { BookRequestDTO } from '../src/api/models/book.types';
 
 let bookClient: BookCLient;
 
@@ -17,29 +16,29 @@ test('Add new book and fetch it', async ({ author, genre }) => {
     author.authorId,
     genre.genreId
   );
-  bookClient.assertSuccess201ResponseCode(createBookRes);
+  await bookClient.assertSuccess201ResponseCode(createBookRes);
 
   const createdBookId = await bookClient.getBookIdFromResponse(createBookRes);
   const getBookRes = await bookClient.getBookById(createdBookId);
 
-  bookClient.assertSuccess200ResponseCode(getBookRes);
+  await bookClient.assertSuccess200ResponseCode(getBookRes);
   await bookClient.expectResponseMatchesObject(getBookRes, newBook);
 });
 
-test('Update book', async ({ book }) => {
+test('Update book', async ({ bookContext }) => {
   const updateBookData = generateNewBook();
 
-  const updateBookRes = await bookClient.updateBook(book.bookId, updateBookData);
-  bookClient.assertSuccess200ResponseCode(updateBookRes);
+  const updateBookRes = await bookClient.updateBook(bookContext.book.bookId, updateBookData);
+  await bookClient.assertSuccess200ResponseCode(updateBookRes);
 
-  const getUpdatedBookRes = await bookClient.getBookById(book.bookId);
+  const getUpdatedBookRes = await bookClient.getBookById(bookContext.book.bookId);
   await bookClient.expectResponseMatchesObject(getUpdatedBookRes, updateBookData);
 });
 
-test('Delete book', async ({ book }) => {
-  const deleteBookRes = await bookClient.deleteBook(book.bookId);
-  bookClient.assertSuccess204ResponseCode(deleteBookRes);
+test('Delete book', async ({ bookContext }) => {
+  const deleteBookRes = await bookClient.deleteBook(bookContext.book.bookId);
+  await bookClient.assertSuccess204ResponseCode(deleteBookRes);
 
-  const getDeletedBookRes = await bookClient.getBookById(book.bookId);
-  bookClient.assertError404ResponseCode(getDeletedBookRes);
+  const getDeletedBookRes = await bookClient.getBookById(bookContext.book.bookId);
+  await bookClient.assertError404ResponseCode(getDeletedBookRes);
 });
