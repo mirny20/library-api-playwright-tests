@@ -1,4 +1,4 @@
-import { APIRequestContext, APIResponse, expect } from "@playwright/test";
+import { APIRequestContext, APIResponse, expect, test } from "@playwright/test";
 import { Logger } from "../../utils/logger";
 
 export abstract class BaseClient {
@@ -32,39 +32,47 @@ export abstract class BaseClient {
   }
 
   async assertSuccess200ResponseCode(response: APIResponse) {
+    await test.step("Assert the code 200 is returned", async () => {
     if (response.status() !== 200) {
       const responseBody = await response.text();
       throw new Error(
         `Expected status 200, but got ${response.status()}.\nURL: ${response.url()}\nBody: ${responseBody}`
       );
     }
+    });
   }
 
   async assertSuccess201ResponseCode(response: APIResponse) {
+    await test.step("Assert the code 201 is returned", async () => {
     if (response.status() !== 201) {
       const responseBody = await response.text();
       throw new Error(
         `Expected status 201, but got ${response.status()}.\nURL: ${response.url()}\nBody: ${responseBody}`
       );
     }
+    });
   }
 
   async assertSuccess204ResponseCode(response: APIResponse) {
+    await test.step("Assert the code 204 is returned", async () => {
     if (response.status() !== 204) {
       const responseBody = await response.text();
       throw new Error(
         `Expected status 204, but got ${response.status()}.\nURL: ${response.url()}\nBody: ${responseBody}`
       );
     }
+    });
   }
 
   async assertError404ResponseCode(response: APIResponse) {
+    await test.step("Assert the code 404 is returned", async () => {
     if (response.status() !== 404) {
       const responseBody = await response.text();
       throw new Error(
         `Expected status 404, but got ${response.status()}.\nURL: ${response.url()}\nBody: ${responseBody}`
       );
     }
+    });
   }
 
   async parseBody(response: APIResponse) {
