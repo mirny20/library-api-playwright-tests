@@ -33,45 +33,45 @@ export abstract class BaseClient {
 
   async assertSuccess200ResponseCode(response: APIResponse) {
     await test.step("Assert status code 200 is returned", async () => {
-    if (response.status() !== 200) {
-      const responseBody = await response.text();
-      throw new Error(
-        `Expected status 200, but got ${response.status()}.\nURL: ${response.url()}\nBody: ${responseBody}`
-      );
-    }
+      if (response.status() !== 200) {
+        const responseBody = await response.text();
+        throw new Error(
+          `Expected status 200, but got ${response.status()}.\nURL: ${response.url()}\nBody: ${responseBody}`
+        );
+      }
     });
   }
 
   async assertSuccess201ResponseCode(response: APIResponse) {
     await test.step("Assert status code 201 is returned", async () => {
-    if (response.status() !== 201) {
-      const responseBody = await response.text();
-      throw new Error(
-        `Expected status 201, but got ${response.status()}.\nURL: ${response.url()}\nBody: ${responseBody}`
-      );
-    }
+      if (response.status() !== 201) {
+        const responseBody = await response.text();
+        throw new Error(
+          `Expected status 201, but got ${response.status()}.\nURL: ${response.url()}\nBody: ${responseBody}`
+        );
+      }
     });
   }
 
   async assertSuccess204ResponseCode(response: APIResponse) {
     await test.step("Assert status code 204 is returned", async () => {
-    if (response.status() !== 204) {
-      const responseBody = await response.text();
-      throw new Error(
-        `Expected status 204, but got ${response.status()}.\nURL: ${response.url()}\nBody: ${responseBody}`
-      );
-    }
+      if (response.status() !== 204) {
+        const responseBody = await response.text();
+        throw new Error(
+          `Expected status 204, but got ${response.status()}.\nURL: ${response.url()}\nBody: ${responseBody}`
+        );
+      }
     });
   }
 
   async assertError404ResponseCode(response: APIResponse) {
     await test.step("Assert status code 404 is returned", async () => {
-    if (response.status() !== 404) {
-      const responseBody = await response.text();
-      throw new Error(
-        `Expected status 404, but got ${response.status()}.\nURL: ${response.url()}\nBody: ${responseBody}`
-      );
-    }
+      if (response.status() !== 404) {
+        const responseBody = await response.text();
+        throw new Error(
+          `Expected status 404, but got ${response.status()}.\nURL: ${response.url()}\nBody: ${responseBody}`
+        );
+      }
     });
   }
 
@@ -86,10 +86,12 @@ export abstract class BaseClient {
     }
   }
 
-  async expectResponseMatchesObject(
-    response: APIResponse,
+  async compareTwoObjects(
+    actual: Record<string, unknown>,
     expected: Record<string, unknown>
   ) {
-    expect(await this.parseBody(response)).toMatchObject(expected);
+    await test.step("Compare actual object with expected", async () => {
+      expect(actual).toMatchObject(expected);
+    });
   }
 }

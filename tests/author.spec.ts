@@ -10,17 +10,18 @@ test.beforeEach(async ({ request }) => {
 })
 
 test('Add new author and fetch it', async () => {
-  const newAuthorData = generateNewAuthor();
+  const generatedAuthorData = generateNewAuthor();
 
-  const createAuthorRes = await authorCLient.createAuthor(newAuthorData);
+  const createAuthorRes = await authorCLient.createAuthor(generatedAuthorData);
 
   await authorCLient.assertSuccess201ResponseCode(createAuthorRes);
 
   const createdAuthorId = await authorCLient.getAuthorIdFromResponse(createAuthorRes);
   const getAuthorRes = await authorCLient.getAuthorById(createdAuthorId);
+  const createdAuthorData = await authorCLient.parseBody(getAuthorRes);
 
   await authorCLient.assertSuccess200ResponseCode(getAuthorRes);
-  await authorCLient.expectResponseMatchesObject(getAuthorRes, newAuthorData);
+  await authorCLient.assertAuthorDataMatch(createdAuthorData, generatedAuthorData);
 });
 
 test('Update author', async ({ author }) => {
@@ -30,7 +31,9 @@ test('Update author', async ({ author }) => {
   await authorCLient.assertSuccess200ResponseCode(updateAuthorRes);
 
   const getUpdatedAuthorRes = await authorCLient.getAuthorById(author.authorId);
-  await authorCLient.expectResponseMatchesObject(getUpdatedAuthorRes, updatedAuthorData);
+  const actualAuthorData = await authorCLient.parseBody(getUpdatedAuthorRes);
+  
+  await authorCLient.assertAuthorDataMatch(actualAuthorData, updatedAuthorData);
 });
 
 test('Delete author and his book forcibly', async ({ bookContext, request }) => {

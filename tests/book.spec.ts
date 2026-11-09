@@ -9,10 +9,10 @@ test.beforeEach(async ({ request }) => {
 })
 
 test('Add new book and fetch it', async ({ author, genre }) => {
-  const newBook = generateNewBook();
+  const generatedBookData = generateNewBook();
 
   const createBookRes = await bookClient.createBook(
-    newBook,
+    generatedBookData,
     author.authorId,
     genre.genreId
   );
@@ -20,9 +20,10 @@ test('Add new book and fetch it', async ({ author, genre }) => {
 
   const createdBookId = await bookClient.getBookIdFromResponse(createBookRes);
   const getBookRes = await bookClient.getBookById(createdBookId);
+  const createdBookData = await bookClient.parseBody(getBookRes);
 
   await bookClient.assertSuccess200ResponseCode(getBookRes);
-  await bookClient.expectResponseMatchesObject(getBookRes, newBook);
+  await bookClient.assertBookDataMatch(createdBookData, generatedBookData);
 });
 
 test('Update book', async ({ bookContext }) => {
@@ -32,7 +33,8 @@ test('Update book', async ({ bookContext }) => {
   await bookClient.assertSuccess200ResponseCode(updateBookRes);
 
   const getUpdatedBookRes = await bookClient.getBookById(bookContext.book.bookId);
-  await bookClient.expectResponseMatchesObject(getUpdatedBookRes, updateBookData);
+  const actualBookData = await bookClient.parseBody(getUpdatedBookRes);
+  await bookClient.assertBookDataMatch(actualBookData, updateBookData);
 });
 
 test('Delete book', async ({ bookContext }) => {

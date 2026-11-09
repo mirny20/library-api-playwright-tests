@@ -5,25 +5,25 @@ import { APIResponse, test } from "@playwright/test";
 export class BookCLient extends BaseClient {
   async getBookById(bookId: number) {
     return test.step(`GET book ID=${bookId}`, async () => {
-    return this.get(`/api/library/book/${bookId}`);
+      return this.get(`/api/library/book/${bookId}`);
     })
   }
 
   async createBook(bookData: BookRequestDTO, authorId: number, genreId: number) {
     return test.step("POST create new book", async () => {
-    return this.post('/api/library/book', bookData, { params: { authorId, genreId } });
+      return this.post('/api/library/book', bookData, { params: { authorId, genreId } });
     })
   }
 
   async updateBook(bookId: number, bookData: BookRequestDTO) {
     return test.step(`PUT update book ID=${bookId}`, async () => {
-    return this.put(`/api/library/book/${bookId}`, bookData);
+      return this.put(`/api/library/book/${bookId}`, bookData);
     })
   }
 
   async deleteBook(bookId: number) {
     return test.step(`DELETE book ID=${bookId}`, async () => {
-    return this.delete(`/api/library/book/${bookId}`);
+      return this.delete(`/api/library/book/${bookId}`);
     })
   }
 
@@ -36,5 +36,14 @@ export class BookCLient extends BaseClient {
     }
 
     return bookId;
+  }
+
+  async assertBookDataMatch(
+    actual: Record<string, unknown>,
+    expected: Record<string, unknown>
+  ) {
+    await test.step("Verify book data matches expected data", async () => {
+      await this.compareTwoObjects(actual, expected);
+    });
   }
 }
